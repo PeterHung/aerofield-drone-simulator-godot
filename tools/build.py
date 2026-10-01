@@ -40,6 +40,7 @@ def main():
     run(godot, "--editor", "--import", "--quit")
     run(godot, "--script", "tests/test_simulator.gd")
     run(godot, "--script", "tests/test_ui.gd")
+    run(godot, "--script", "tests/test_display.gd")
     preset_file = ROOT / "export_presets.cfg"
     original = preset_file.read_text()
     presets = original

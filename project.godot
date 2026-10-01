@@ -15,6 +15,7 @@ window/size/window_height_override=900
 window/size/min_width=960
 window/size/min_height=640
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 window/stretch/scale_mode="fractional"
 window/vsync/vsync_mode=1
 window/subwindows/embed_subwindows=true

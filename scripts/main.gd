@@ -19,6 +19,8 @@ var header: HBoxContainer
 var sidebar: PanelContainer
 var footer: PanelContainer
 var field_view: SubViewport
+var main_margin: MarginContainer
+var field_card: PanelContainer
 var mode_option: OptionButton
 var level_option: OptionButton
 var assist_option: OptionButton
@@ -56,6 +58,7 @@ var export_dialog: FileDialog
 var reset_dialog: ConfirmationDialog
 var help_dialog: AcceptDialog
 var fullscreen_field = false
+var previous_window_mode = DisplayServer.WINDOW_MODE_WINDOWED
 var focused = true
 var ui_age = 0.0
 var last_voice = ""
@@ -70,7 +73,7 @@ func _ready() -> void:
 	audio = Audio.new()
 	add_child(audio)
 	Input.joy_connection_changed.connect(_joy_changed)
-	get_viewport().size_changed.connect(_resize_ui)
+	resized.connect(_resize_ui)
 	_resize_ui()
 	refresh_ui()
 	if DisplayServer.get_name() != "headless":
@@ -165,14 +168,14 @@ func build_ui() -> void:
 	bg.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	bg.mouse_filter = MOUSE_FILTER_IGNORE
 	add_child(bg)
-	var margin = MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	main_margin = MarginContainer.new()
+	main_margin.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	for edge in ["left","top","right","bottom"]:
-		margin.add_theme_constant_override("margin_"+edge,20)
-	add_child(margin)
+		main_margin.add_theme_constant_override("margin_"+edge,20)
+	add_child(main_margin)
 	var root = VBoxContainer.new()
 	root.add_theme_constant_override("separation",16)
-	margin.add_child(root)
+	main_margin.add_child(root)
 	header = HBoxContainer.new()
 	header.custom_minimum_size.y = 56
 	header.add_theme_constant_override("separation",16)
@@ -234,7 +237,7 @@ func build_ui() -> void:
 	right.size_flags_horizontal = SIZE_EXPAND_FILL
 	right.add_theme_constant_override("separation",12)
 	content.add_child(right)
-	var field_card = PanelContainer.new()
+	field_card = PanelContainer.new()
 	field_card.size_flags_vertical = SIZE_EXPAND_FILL
 	field_card.add_theme_stylebox_override("panel",style(Color("d2e1d7"),Color("d4ded6"),12,0))
 	right.add_child(field_card)
@@ -579,14 +582,20 @@ func _sticks_changed(value: bool) -> void:
 	controls.reset()
 
 func _toggle_field() -> void:
+	if not fullscreen_field and DisplayServer.get_name() != "headless":
+		previous_window_mode = DisplayServer.window_get_mode()
 	fullscreen_field = not fullscreen_field
 	header.visible = not fullscreen_field
 	sidebar.visible = not fullscreen_field
 	footer.visible = not fullscreen_field
 	control_status.visible = not fullscreen_field
 	field_prompt.visible = fullscreen_field
+	for edge in ["left","top","right","bottom"]:
+		main_margin.add_theme_constant_override("margin_"+edge,0 if fullscreen_field else 20)
+	field_card.add_theme_stylebox_override("panel",style(Color("d2e1d7"),
+		Color(0,0,0,0) if fullscreen_field else Color("d4ded6"),0 if fullscreen_field else 12,0))
 	if DisplayServer.get_name() != "headless":
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen_field else DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen_field else previous_window_mode)
 
 func _resize_ui() -> void:
 	if sidebar != null:

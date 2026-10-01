@@ -4,6 +4,8 @@
 
 建立日期：**2026-10-01（Asia/Taipei）**。版本資料夾：`2026-10-01-aerofield-drone-simulator-godot-gpt-6.1-sol-high`。
 
+v1.0.1：視窗放大改為隨螢幕比例延展，移除寬螢幕黑邊；考場全螢幕填滿整個視窗，保留儀表，退出後恢復原本的最大化狀態。
+
 ![Godot 訓練工作站](docs/screenshots/01-workstation.png)
 
 ## 直接執行
@@ -82,6 +84,7 @@ Web 版需要支援 WebGL 2 的桌面瀏覽器與 Python 3 啟動本機伺服器
 godot --headless --editor --import --quit
 godot --headless --script tests/test_simulator.gd
 godot --headless --script tests/test_ui.gd
+godot --headless --script tests/test_display.gd
 python3 tools/build.py --targets macos web windows linux
 ```
 
