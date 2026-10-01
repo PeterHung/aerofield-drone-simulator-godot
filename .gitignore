@@ -1,0 +1,7 @@
+.godot/
+builds/
+work/
+.DS_Store
+*.tmp
+__pycache__/
+*.pyc
